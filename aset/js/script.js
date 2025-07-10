@@ -5,10 +5,12 @@ const projects = document.querySelectorAll('.project-card');
 filterButtons.forEach(button => {
     button.addEventListener('click', () => {
         // Update active button
-        filterButtons.forEach(btn => btn.classList.remove('bg-primary', 'text-white', 'active-filter'));
-        filterButtons.forEach(btn => btn.classList.add('bg-white'));
-        button.classList.remove('bg-white');
-        button.classList.add('bg-primary', 'text-white', 'active-filter');
+        filterButtons.forEach(btn => {
+            btn.classList.remove('bg-primary', 'text-white', 'dark:bg-primary-dark', 'dark:text-dark_text');
+            btn.classList.add('bg-white', 'text-gray-900', 'dark:bg-dark_card', 'dark:text-dark_text');
+        });
+        button.classList.remove('bg-white', 'text-gray-900', 'dark:bg-dark_card', 'dark:text-dark_text');
+        button.classList.add('bg-primary', 'text-white', 'dark:bg-primary-dark', 'dark:text-white');
         
         const filter = button.dataset.filter;
         
@@ -73,7 +75,7 @@ themeToggle.id = 'theme-toggle';
 const navbar = document.querySelector('nav .container > div');
 console.log('Navbar element:', navbar);
 
-const mobileMenuButton = navbar ? navbar.querySelector('button.md\:hidden') : null;
+const mobileMenuButton = document.getElementById('mobile-menu-toggle');
 console.log('Mobile menu button element:', mobileMenuButton);
 
 if (mobileMenuButton) {
@@ -83,9 +85,9 @@ if (mobileMenuButton) {
 }
 
 themeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
+    document.body.classList.toggle('dark');
     // Save user preference
-    if (document.body.classList.contains('dark-mode')) {
+    if (document.body.classList.contains('dark')) {
         localStorage.setItem('theme', 'dark');
     } else {
         localStorage.setItem('theme', 'light');
@@ -95,54 +97,26 @@ themeToggle.addEventListener('click', () => {
 // Apply saved theme on load
 const savedTheme = localStorage.getItem('theme');
 if (savedTheme === 'dark') {
-    document.body.classList.add('dark-mode');
+    document.body.classList.add('dark');
 }
 
 // Mobile menu toggle
-const mobileNavButton = document.querySelector('nav button.md\:hidden');
-const mobileNavMenu = document.querySelector('nav .hidden.md\:flex'); // This is the desktop menu, need to create a mobile one
+const mobileNavButton = document.getElementById('mobile-menu-toggle');
+const mobileMenu = document.getElementById('mobile-menu');
+const closeMobileMenuButton = document.getElementById('close-mobile-menu');
 
-if (mobileNavButton) {
+if (mobileNavButton && mobileMenu) {
     mobileNavButton.addEventListener('click', () => {
-        // For simplicity, let's just toggle a class on the body or a dedicated mobile menu div
-        // A more robust solution would involve creating a separate mobile menu element
-        const mobileMenu = document.createElement('div');
-        mobileMenu.classList.add('md:hidden', 'fixed', 'inset-0', 'bg-white', 'dark:bg-dark', 'z-40', 'flex', 'flex-col', 'items-center', 'justify-center', 'space-y-6', 'transition-transform', 'transform', 'translate-x-full');
-        mobileMenu.id = 'mobile-menu';
-        mobileMenu.innerHTML = `
-            <a href="#home" class="text-2xl hover:text-primary transition">Home</a>
-            <a href="#about" class="text-2xl hover:text-primary transition">About</a>
-            <a href="#services" class="text-2xl hover:text-primary transition">Services</a>
-            <a href="#projects" class="text-2xl hover:text-primary transition">Projects</a>
-            <a href="#contact" class="text-2xl hover:text-primary transition">Contact</a>
-            <button id="close-mobile-menu" class="absolute top-4 right-4 text-gray-600 dark:text-gray-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-        `;
-        document.body.appendChild(mobileMenu);
+        mobileMenu.classList.remove('translate-x-full');
+    });
 
-        // Animate in
-        setTimeout(() => {
-            mobileMenu.classList.remove('translate-x-full');
-        }, 10);
+    closeMobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.add('translate-x-full');
+    });
 
-        document.getElementById('close-mobile-menu').addEventListener('click', () => {
+    mobileMenu.querySelectorAll('a[data-menu-close]').forEach(link => {
+        link.addEventListener('click', () => {
             mobileMenu.classList.add('translate-x-full');
-            mobileMenu.addEventListener('transitionend', () => {
-                mobileMenu.remove();
-            }, { once: true });
-        });
-
-        // Close menu when a link is clicked
-        mobileMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.add('translate-x-full');
-                mobileMenu.addEventListener('transitionend', () => {
-                    mobileMenu.remove();
-                }, { once: true });
-            });
         });
     });
 }
